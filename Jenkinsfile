@@ -3,8 +3,10 @@ pipeline {
     agent {
         label 'AGENT-1'
     }
-    // environment {
-    //     COURSE = 'jenkins'
+    environment {
+        appVersion = ''
+        //COURSE = 'jenkins'
+    }
 
     // }
     options { // pipeline expries 30 mint
@@ -20,28 +22,21 @@ pipeline {
     } */
    // build
    stages {
-        stage('Build') {
+        stage('Read package.json') {
             steps {
-                script{
-                   // echo 'Building..'
-                   sh """
-                   echo "hello world"
-                   sleep 10
-                   env
-                   """
+                script {
+                    // Read the entire package.json file into a Groovy Map
+                    def packageJSON = readJSON file: 'package.json'
+
+                    // Access a specific property, for example, the 'version'
+                     appVersion = packageJSON.version
+
+                    // Print the extracted version
+                    echo "Package Version: ${appVersion }"
+
                 }
-                
-            } 
-        }
-        stage('Test') { 
-            steps {
-                script{
-                    echo 'Testing..'
-                }
-                
             }
         }
-        
     }
          
     post { 
