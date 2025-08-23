@@ -71,26 +71,23 @@ pipeline {
             }
             
         stage('trigger deploy') {
-             when {
+            when {
                 expression { params.delpoy }
             }
-
             steps {
-                script {
+                 script {
                     build job: 'catalogue-cd', 
-                     parameters: [
+                    parameters: [
                        string(name: 'appVersion', value: "${appVersion}"),
                        string(name: 'deploy_to', value: 'dev')
                               
-                        ]
-                      propagate: false,    // even SG fails VPC will not be effected
-                      wait: false   // VPC will not wait for SG pipeline completion  
+                    ],
+                    propagate: false,    // even SG fails VPC will not be effected
+                    wait: false   // VPC will not wait for SG pipeline completion  
                   }
-
-                }
-            }
-        }
-       
+             }
+         }
+     }       
     post { 
         always { 
             echo 'I will always say Hello again!'
@@ -103,6 +100,5 @@ pipeline {
             echo 'hello failure'
         }
     }
-
 }
 
