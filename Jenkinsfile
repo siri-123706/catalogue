@@ -26,13 +26,9 @@ pipeline {
         stage('Read package.json') {
             steps {
                 script {
-                    // Read the entire package.json file into a Groovy Map
+                   
                     def packageJSON = readJSON file: 'package.json'
-
-                    // Access a specific property, for example, the 'version'
                      appVersion = packageJSON.version
-
-                    // Print the extracted version
                     echo "Package Version: ${appVersion }"
 
                 }
