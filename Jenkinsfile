@@ -55,21 +55,21 @@ pipeline {
                 }
             }
         }
-        // stage('SonarQube scan') { 
-        //     environemnt {
-        //         scannerHome = tool 'sonar-7.2'
-        //     }          
-        //     steps {
-        //         script {
-        //             // sonar server environment
-        //             withSonarQubeEnv('sonar-7.2') { // ID configured in Configure System
-        //                  sh "${scannerHome}/bin/sonar-scanner"
+        stage('SonarQube scan') { 
+            environemnt {
+                scannerHome = tool 'sonar-7.2'
+            }          
+            steps {
+                script {
+                    // sonar server environment
+                    withSonarQubeEnv('sonar-7.2') { // ID configured in Configure System
+                         sh "${scannerHome}/bin/sonar-scanner"
 
-        //             }
-        //         }
-        //     }
+                    }
+                }
+            }
 
-        // } 
+        } 
         // enable webhook in sonarqube server and wait for results
         // stage ("Quality Gate") {
         //     steps {
