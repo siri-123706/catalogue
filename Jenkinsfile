@@ -73,7 +73,7 @@ pipeline {
         // enable webhook in sonarqube server and wait for results
         stage ("Quality Gate") {
             steps {
-                timeout(time: 1 unit: 'HOURS') {
+                timeout(time: 1, unit: 'HOURS') {
                 waitForQualityGate abortPipeline: true }
             }
        
