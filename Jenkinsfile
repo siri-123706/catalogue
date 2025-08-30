@@ -2,5 +2,7 @@
 
 def configMap = [
     greeting : "hello Jenkins"
+    project: "roboshop"
+    component: "catalogue"
 ]
-samplePipeline(configMap) // by deafauult fntion 
+nodejsEKSPipeline(configMap) // by deafauult fntion 

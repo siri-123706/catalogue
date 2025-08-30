@@ -128,6 +128,56 @@ pipeline {
         
         }
             
+        stage('Check Scan Results') {
+            steps {
+                script {
+                    withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                    // Fetch scan findings
+                        def findings = sh(
+                            script: """
+                                aws ecr describe-image-scan-findings \
+                                --repository-name ${PROJECT}/${COMPONENT} \
+                                --image-id imageTag=${appVersion} \
+                                --region ${REGION} \
+                                --output json
+                            """,
+                            returnStdout: true
+                        ).trim()
+
+                        // Parse JSON
+                        def json = readJSON text: findings
+
+                        def highCritical = json.imageScanFindings.findings.findAll {
+                            it.severity == "HIGH" || it.severity == "CRITICAL"
+                        }
+
+                        if (highCritical.size() > 0) {
+                            echo "❌ Found ${highCritical.size()} HIGH/CRITICAL vulnerabilities!"
+                            currentBuild.result = 'FAILURE'
+                            error("Build failed due to vulnerabilities")
+                        } else {
+                            echo "✅ No HIGH/CRITICAL vulnerabilities found."
+                        }
+                    }
+                }
+            }
+        }
+        stage('Trigger Deploy') {
+            when{
+                expression { params.deploy }
+            }
+            steps {
+                script {
+                    build job: 'catalogue-cd',
+                    parameters: [
+                        string(name: 'appVersion', value: "${appVersion}"),
+                        string(name: 'deploy_to', value: 'dev')
+                    ],
+                    propagate: false,  // even SG fails VPC will not be effected
+                    wait: false // VPC will not wait for SG pipeline completion
+                }
+            }
+        }  
         stage('trigger deploy') {
             when {
                 expression { params.delpoy }
@@ -144,8 +194,8 @@ pipeline {
                     wait: false   // don’t wait for deploy pipeline, continue immediately.  
                 }
             }
-       }  
-    }       
+       }
+    }  
     post { 
         always { 
             echo 'I will always say Hello again!'
