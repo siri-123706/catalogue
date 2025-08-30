@@ -56,7 +56,7 @@ pipeline {
             }
         }
         stage('Sonar scan') { 
-            environemnt {
+             environemnt {
                 scannerHome = tool 'sonar-7.2'
             }          
             steps {
